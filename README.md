@@ -6,3 +6,6 @@
 python3  scripts/train.py --task=go2
 # Test
 python scripts/play.py --task=go2
+# Model saved path
+unitree_rl_gym/logs/{$task_name}/exported
+/policies/
