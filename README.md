@@ -9,3 +9,5 @@ python scripts/play.py --task=go2
 # Model saved path
 unitree_rl_gym/logs/{$task_name}/exported
 /policies/
+# Sim2sim
+use Swordros88/humanoid-gym to simulate in mojocu
