@@ -12,4 +12,7 @@ from legged_gym.envs.loong.loong_config import LoongCfg, LoongCfgPPO
 from legged_gym.envs.loong.loong_env import LoongFreeEnv
 task_registry.register( "loong_ppo", LoongFreeEnv, LoongCfg(), LoongCfgPPO() )
 
+from legged_gym.envs.loong_pbrs.loong_config import LoongCfg, LoongCfgPPO
+from legged_gym.envs.loong_pbrs.loong_env import LoongPBRSEnv
+task_registry.register( "loong_pbrs", LoongPBRSEnv, LoongCfg(), LoongCfgPPO() )
 
