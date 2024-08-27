@@ -688,6 +688,11 @@ class LeggedRobot(BaseTask):
         base_height = self.root_states[:, 2]
         return torch.square(base_height - self.cfg.rewards.base_height_target)
     
+    def _reward_base_y(self):
+        # Penalize base y-axis away from target to walk straight
+        base_y = self.root_states[:, 1]
+        return torch.square(base_y - self.cfg.rewards.base_y_target)
+    
     def _reward_torques(self):
         # Penalize torques
         return torch.sum(torch.square(self.torques), dim=1)

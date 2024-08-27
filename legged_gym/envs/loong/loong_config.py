@@ -165,7 +165,7 @@ class LoongCfg(LeggedRobotCfg):
         heading_command = True  # if true: compute ang vel command from heading error
 
         class ranges:
-            lin_vel_x = [-0.3, 0.6]  # min max [m/s]
+            lin_vel_x = [-0.3, 1.5]  # min max [m/s]
             lin_vel_y = [-0.3, 0.3]   # min max [m/s]
             ang_vel_yaw = [-0.3, 0.3]    # min max [rad/s]
             heading = [-3.14, 3.14]
@@ -173,11 +173,12 @@ class LoongCfg(LeggedRobotCfg):
     class rewards:
         soft_dof_pos_limit = 0.9
         base_height_target = 1.09
+        base_y_target = 0
         min_dist = 0.2
         max_dist = 0.5
         # put some settings here for LLM parameter tuning
         target_joint_pos_scale = 0.17    # rad
-        target_feet_height = 0.06       # m
+        target_feet_height = 0.1       # m
         cycle_time = 0.64                # sec
         # if true negative total rewards are clipped at zero (avoids early termination problems)
         only_positive_rewards = True
@@ -198,18 +199,19 @@ class LoongCfg(LeggedRobotCfg):
             # contact
             feet_contact_forces = -0.01
             # vel tracking
-            tracking_lin_vel = 1.2
-            tracking_ang_vel = 1.1
+            tracking_lin_vel = 1
+            tracking_ang_vel = 0.2
             vel_mismatch_exp = 0.5  # lin_z; ang x,y
             low_speed = 0.2
             track_vel_hard = 0.5
             # base pos
             default_joint_pos = 0.5
             orientation = 1.
-            base_height = 0.2
+            base_height = -50.0
+            base_y = -3.0
             base_acc = 0.2
             # energy
-            action_smoothness = -0.002
+            action_smoothness = -0.02
             torques = -1e-5
             dof_vel = -5e-4
             dof_acc = -1e-7
