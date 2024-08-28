@@ -138,7 +138,7 @@ class LoongFreeEnv(LeggedRobot):
         # self.ref_dof_pos[:, 8] = sin_pos_r * scale_1
         # self.ref_dof_pos[:, 9] = sin_pos_r * scale_2
         # self.ref_dof_pos[:, 10] = sin_pos_r * scale_1
-        self.ref_dof_pos[:, 8] = sin_pos_r * scale_1# 
+        self.ref_dof_pos[:, 8] = sin_pos_r * scale_1
         self.ref_dof_pos[:, 9] = -sin_pos_r * scale_2
         self.ref_dof_pos[:, 10] = sin_pos_r * scale_1
         # Double support phase
@@ -383,6 +383,18 @@ class LoongFreeEnv(LeggedRobot):
         yaw_roll = torch.norm(left_yaw_roll, dim=1) + torch.norm(right_yaw_roll, dim=1)
         yaw_roll = torch.clamp(yaw_roll - 0.1, 0, 50)
         return torch.exp(-yaw_roll * 100) - 0.01 * torch.norm(joint_diff, dim=1)
+
+    def _reward_default_ankle_roll(self):
+        """
+        Calculates the reward for keeping ankle positions close to default positions, with a focus 
+        on penalizing deviation in roll directions. Excludes roll from the main penalty.
+        """
+        joint_diff = self.dof_pos - self.default_joint_pd_target
+        left_ankle_roll = joint_diff[:, 5]
+        right_ankle_roll = joint_diff[:, 11]
+        ankle_roll = torch.norm(left_ankle_roll, dim=1) + torch.norm(right_ankle_roll, dim=1)
+        ankle_roll = torch.clamp(ankle_roll - 0.1, 0, 50)
+        return torch.exp(-ankle_roll * 100) - 0.01 * torch.norm(joint_diff, dim=1)    
 
     def _reward_base_height(self):
         """

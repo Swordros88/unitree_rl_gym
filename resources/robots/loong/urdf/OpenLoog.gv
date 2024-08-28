@@ -1,5 +1,6 @@
 digraph G {
 node [shape=box];
+"world" [label="world"];
 "base_link" [label="base_link"];
 "Link_head_yaw" [label="Link_head_yaw"];
 "Link_head_pitch" [label="Link_head_pitch"];
@@ -33,6 +34,8 @@ node [shape=box];
 "Link_arm_r_06" [label="Link_arm_r_06"];
 "Link_arm_r_07" [label="Link_arm_r_07"];
 node [shape=ellipse, color=blue, fontcolor=blue];
+"world" -> "floating_base_joint" [label="xyz: 0 0 0 \nrpy: 0 -0 0"]
+"floating_base_joint" -> "base_link"
 "base_link" -> "J_head_yaw" [label="xyz: 0.009 0 0.4064 \nrpy: 0 -0 0"]
 "J_head_yaw" -> "Link_head_yaw"
 "Link_head_yaw" -> "J_head_pitch" [label="xyz: 0 -0.0346 0.0485 \nrpy: 0 -0 0"]
