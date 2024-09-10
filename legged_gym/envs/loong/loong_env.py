@@ -130,7 +130,7 @@ class LoongFreeEnv(LeggedRobot):
         scale_2 = 2 * scale_1
         # left foot stance phase set to default joint pos
         sin_pos_l[sin_pos_l > 0] = 0
-        self.ref_dof_pos[:, 2] = -sin_pos_l * scale_1 # hip_pitch
+        self.ref_dof_pos[:, 2] = -sin_pos_l * scale_2 # hip_pitch
         self.ref_dof_pos[:, 3] = sin_pos_l * scale_2 # knee
         self.ref_dof_pos[:, 4] = -sin_pos_l * scale_1 #ankle_pitch
         # right foot stance phase set to default joint pos
@@ -138,7 +138,7 @@ class LoongFreeEnv(LeggedRobot):
         # self.ref_dof_pos[:, 8] = sin_pos_r * scale_1
         # self.ref_dof_pos[:, 9] = sin_pos_r * scale_2
         # self.ref_dof_pos[:, 10] = sin_pos_r * scale_1
-        self.ref_dof_pos[:, 8] = sin_pos_r * scale_1
+        self.ref_dof_pos[:, 8] = sin_pos_r * scale_2
         self.ref_dof_pos[:, 9] = -sin_pos_r * scale_2
         self.ref_dof_pos[:, 10] = sin_pos_r * scale_1
         # Double support phase
@@ -384,18 +384,22 @@ class LoongFreeEnv(LeggedRobot):
         yaw_roll = torch.clamp(yaw_roll - 0.1, 0, 50)
         return torch.exp(-yaw_roll * 100) - 0.01 * torch.norm(joint_diff, dim=1)
 
-    def _reward_default_ankle_roll(self):
+    def sqrdexp(self, x):
+        """ shorthand helper for squared exponential
         """
-        Calculates the reward for keeping ankle positions close to default positions, with a focus 
-        on penalizing deviation in roll directions. Excludes roll from the main penalty.
-        """
-        joint_diff = self.dof_pos - self.default_joint_pd_target
-        left_ankle_roll = joint_diff[:, 5]
-        right_ankle_roll = joint_diff[:, 11]
-        ankle_roll = torch.norm(left_ankle_roll, dim=1) + torch.norm(right_ankle_roll, dim=1)
-        ankle_roll = torch.clamp(ankle_roll - 0.1, 0, 50)
-        return torch.exp(-ankle_roll * 100) - 0.01 * torch.norm(joint_diff, dim=1)    
-
+        return torch.exp(-torch.square(x)/self.cfg.rewards.tracking_sigma)
+    def _reward_ankle_regularization(self):
+        # Ankle joint regularization around 0
+        error = 0
+        error += self.sqrdexp(
+            (2.5*self.dof_pos[:, 5]) / self.cfg.normalization.obs_scales.dof_pos)
+        error += self.sqrdexp(
+            (2.5*self.dof_pos[:, 11]) / self.cfg.normalization.obs_scales.dof_pos)
+        error += self.sqrdexp(
+            (self.dof_pos[:, 4]-self.cfg.init_state.default_joint_angles['l_ankle_pitch']) / self.cfg.normalization.obs_scales.dof_pos)
+        error += self.sqrdexp(
+            (self.dof_pos[:, 10]-self.cfg.init_state.default_joint_angles['r_ankle_pitch']) / self.cfg.normalization.obs_scales.dof_pos)
+        return error / 4.
     def _reward_base_height(self):
         """
         Calculates the reward based on the robot's base height. Penalizes deviation from a target base height.

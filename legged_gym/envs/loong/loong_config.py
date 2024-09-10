@@ -173,13 +173,12 @@ class LoongCfg(LeggedRobotCfg):
     class rewards:
         soft_dof_pos_limit = 0.9
         base_height_target = 1.09
-        base_y_target = 0.0
         min_dist = 0.2
         max_dist = 0.5
         # put some settings here for LLM parameter tuning
-        target_joint_pos_scale = 0.17    # rad
+        target_joint_pos_scale = 0.3    # rad
         target_feet_height = 0.1       # m
-        cycle_time = 0.64                # sec
+        cycle_time = 0.2                # sec
         # if true negative total rewards are clipped at zero (avoids early termination problems)
         only_positive_rewards = True
         # tracking reward = exp(error*sigma)
@@ -206,10 +205,9 @@ class LoongCfg(LeggedRobotCfg):
             track_vel_hard = 0.5
             # base pos
             default_joint_pos = 0.5
-            default_ankle_roll = 0.5
             orientation = 1.
+            ankle_regularization = 0.1
             base_height = 0.02
-            base_y = 0.03
             base_acc = 0.2
             # energy
             action_smoothness = -0.02
